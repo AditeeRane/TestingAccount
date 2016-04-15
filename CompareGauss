@@ -1,0 +1,47 @@
+void compareGauss(){
+  TFile *f = new TFile("compareGauss.root","RECREATE");
+  int col1 = kBlue;
+  int col2 = kGreen +3;
+  TH1D* hist_SameRandom;
+  TH1D* hist_DiffRandom;
+  TH1D *hist_SameRandom = new TH1D("hist_SameRandom","Compare Gaussian Distributions" ,120, -20., 20);
+  TH1D *hist_DiffRandom = new TH1D("hist_DiffRandom","Compare Gaussian Distributions",120, -20., 20);
+  int i=0;
+  while(i<10000){
+  srand((unsigned)time(NULL));
+  double sample_gOne=gRandom->Gaus(0,1);
+  double sample_gTwo=gRandom->Gaus(0,1);
+  double x=2*sample_gOne;
+  double y=sample_gOne+sample_gTwo;
+  hist_SameRandom->Fill(x);
+  hist_DiffRandom->Fill(y);
+  //cout<<" sample_gOne "<<sample_gOne<<" sample_gTwo "<<sample_gTwo<<endl;
+  i++;
+  }
+  hist_SameRandom->SetLineColor(col1); 
+  hist_DiffRandom->SetLineColor(col2); 
+  hist_SameRandom->Scale(1.0/hist_SameRandom->Integral());
+  hist_DiffRandom->Scale(1.0/hist_DiffRandom->Integral());
+  TCanvas *c = new TCanvas("a", "a", 500, 500);
+  hist_SameRandom->Draw();
+  hist_DiffRandom->Draw("sames");
+
+  gPad->Update();
+  TPaveStats *st1 = (TPaveStats*)hist_SameRandom->FindObject("stats");  
+  st1->SetLineColor(col1);
+  
+  TPaveStats *st2 = (TPaveStats*)hist_DiffRandom->FindObject("stats");  
+  st2->SetLineColor(col2);
+
+  st1->SetX1NDC(0.6);
+  st1->SetX2NDC(0.8); 
+  st1->SetY1NDC(0.5);
+  st1->SetY2NDC(0.7);
+  st2->SetX1NDC(0.6);
+  st2->SetX2NDC(0.8);  
+  st2->SetY1NDC(0.7);
+  st2->SetY2NDC(0.9);
+  st1->SetTextColor(col1);
+  st2->SetTextColor(col2);
+  gPad->Modified();
+} 
